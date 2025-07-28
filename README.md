@@ -1,15 +1,15 @@
-Complete GitHub Documentation for South Indian Bank Chatbot (SOnA)
+Complete GitHub Documentation for South Indian Bank Chatbot (SAI)
 Here's a comprehensive README.md file for your GitHub repository:
 
 text
-# 🏦 SOnA - South Indian Bank Chatbot
+# 🏦 SAI - South Indian Bank Chatbot
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.29.0-red.svg)](https://streamlit.io)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Offline](https://img.shields.io/badge/Mode-Offline-yellow.svg)]()
 
-**SOnA (South Indian Bank Online Assistant)** is an AI-powered chatbot built exclusively for South Indian Bank queries using RAG (Retrieval-Augmented Generation) approach. It operates completely offline, ensuring maximum security and privacy.
+**SAI (South Indian Bank Online Assistant)** is an AI-powered chatbot built exclusively for South Indian Bank queries using RAG (Retrieval-Augmented Generation) approach. It operates completely offline, ensuring maximum security and privacy.
 
 ## 🌟 Features
 
