@@ -3,89 +3,33 @@ from rag_chain import SIBRAGChain
 import time
 import os
 
-# Page configuration
 st.set_page_config(
     page_title="SOnA - South Indian Bank Assistant",
     page_icon="🏦",
     layout="wide"
 )
 
-# Initialize the RAG chain
 @st.cache_resource
 def load_rag_chain():
+    """Load RAG chain with caching"""
     try:
         return SIBRAGChain()
     except Exception as e:
-        st.error(f"Failed to initialize RAG chain: {e}")
+        st.error(f"Failed to initialize: {e}")
         return None
-
-# Custom CSS
-st.markdown("""
-<style>
-    .stChat {
-        background-color: #f0f2f6;
-    }
-    .chat-message {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin-bottom: 1rem;
-    }
-    .user-message {
-        background-color: #007bff;
-        color: white;
-        margin-left: 20%;
-    }
-    .assistant-message {
-        background-color: #28a745;
-        color: white;
-        margin-right: 20%;
-    }
-</style>
-""", unsafe_allow_html=True)
 
 def main():
     st.title("🏦 SOnA - South Indian Bank Assistant")
-    st.subheader("Your AI-powered banking companion")
     
-    # Check if vector store exists
+    # Check vector database
     if not os.path.exists("sib_vectordb"):
-        st.error("⚠️ Vector database not found!")
-        st.write("Please follow these steps:")
-        st.write("1. Add your SIB documents to the 'sib_data' folder")
-        st.write("2. Run: `python document_processor.py`")
-        st.write("3. Run: `python vector_store.py`")
-        st.write("4. Refresh this page")
+        st.error("⚠️ Vector database not found! Run setup first.")
         return
-    
-    # Sidebar
-    with st.sidebar:
-        st.header("About SOnA")
-        st.write("""
-        SOnA (South Indian Bank Online Assistant) is your dedicated AI assistant for all South Indian Bank related queries.
-        
-        **What I can help you with:**
-        - Account services and products
-        - Loan information
-        - Credit card details
-        - Banking policies
-        - Branch and ATM locations
-        - Interest rates
-        - Customer service
-        """)
-        
-        st.header("System Status")
-        st.success("🟢 Online - Running locally")
-        st.info("🔒 Fully secure - No data leaves your server")
-        
-        # System info
-        st.header("System Info")
-        st.write(f"Vector DB: {'✅ Ready' if os.path.exists('sib_vectordb') else '❌ Missing'}")
-        st.write(f"Documents: {'✅ Loaded' if os.path.exists('sib_data') else '❌ Missing'}")
     
     # Initialize chat history
     if "messages" not in st.session_state:
         st.session_state.messages = [
-            {"role": "assistant", "content": "Hello! I'm SOnA, your South Indian Bank assistant. How can I help you today?"}
+            {"role": "assistant", "content": "Hello! I'm SOnA. Ask me about South Indian Bank services."}
         ]
     
     # Display chat messages
@@ -94,41 +38,56 @@ def main():
             st.markdown(message["content"])
     
     # Chat input
-    if prompt := st.chat_input("Ask me about South Indian Bank services..."):
-        # Add user message to chat history
+    if prompt := st.chat_input("Ask about South Indian Bank..."):
+        # Add user message
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
         
-        # Get assistant response
+        # Get response
         with st.chat_message("assistant"):
-            with st.spinner("Thinking..."):
-                try:
+            try:
+                with st.spinner("Processing... (may take 30-60 seconds)"):
                     rag_chain = load_rag_chain()
+                    
                     if rag_chain:
+                        start_time = time.time()
                         response = rag_chain.query(prompt)
+                        end_time = time.time()
                         
-                        # Display answer
+                        # Display response
                         st.markdown(response["answer"])
                         
-                        # Display sources if available
-                        if response["sources"] and any(response["sources"]):
+                        # Show timing info
+                        st.caption(f"⏱️ Responded in {end_time - start_time:.1f} seconds")
+                        
+                        # Sources
+                        if response.get("sources"):
                             with st.expander("📚 Sources"):
                                 for source in set(response["sources"]):
                                     if source != "Unknown":
                                         st.write(f"- {source}")
                         
-                        # Add assistant response to chat history
-                        st.session_state.messages.append({"role": "assistant", "content": response["answer"]})
+                        # Add to chat history
+                        st.session_state.messages.append({
+                            "role": "assistant", 
+                            "content": response["answer"]
+                        })
                     else:
-                        error_msg = "Failed to initialize the assistant. Please check the setup."
+                        error_msg = "❌ Could not initialize assistant"
                         st.error(error_msg)
-                        st.session_state.messages.append({"role": "assistant", "content": error_msg})
-                    
-                except Exception as e:
-                    error_msg = f"I'm experiencing some technical difficulties. Error: {str(e)}"
-                    st.error(error_msg)
-                    st.session_state.messages.append({"role": "assistant", "content": error_msg})
+                        st.session_state.messages.append({
+                            "role": "assistant", 
+                            "content": error_msg
+                        })
+                        
+            except Exception as e:
+                error_msg = f"❌ Error: {str(e)}"
+                st.error(error_msg)
+                st.session_state.messages.append({
+                    "role": "assistant", 
+                    "content": error_msg
+                })
 
 if __name__ == "__main__":
     main()
