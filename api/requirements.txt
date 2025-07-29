@@ -1,0 +1,38 @@
+# FastAPI and dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# HTTP client
+httpx==0.25.2
+
+# Async Redis
+redis[hiredis]==5.0.1
+
+# Monitoring
+prometheus-client==0.19.0
+
+# LangChain
+langchain==0.1.0
+langchain-community==0.0.12
+
+# LLM
+ollama==0.1.7
+
+# Document processing
+pypdf==3.17.4
+
+# System monitoring
+psutil==5.9.6
+
+# Utilities
+python-multipart==0.0.6
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Development
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.11.0
+flake8==6.1.0
