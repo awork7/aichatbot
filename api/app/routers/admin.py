@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.models.request import AdminRequest
 from app.services.rag_service import RAGService
 from app.core.config import get_settings
-from app.main import get_rag_service
+from app.core.dependencies import get_rag_service  # Fixed import
 import logging
 
 router = APIRouter()
@@ -54,11 +54,3 @@ async def get_system_info(
             "version": get_settings().VERSION
         }
     }
-
-@router.post("/clear-cache")
-async def clear_cache(
-    credentials: HTTPAuthorizationCredentials = Depends(verify_admin_token)
-):
-    """Clear application cache"""
-    # Implementation depends on your cache system
-    return {"message": "Cache cleared successfully"}

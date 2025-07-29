@@ -9,7 +9,7 @@ import logging
 from langchain_community.llms import Ollama
 from app.core.config import Settings
 from app.utils.monitoring import track_metrics, LLM_TOKENS
-from app.utils.cache import cache_result
+# Remove this line: from app.utils.cache import cache_result
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ class RAGService:
             raise
     
     @track_metrics("rag_query")
-    @cache_result(ttl=300)
+    # Remove this line: @cache_result(ttl=300)
     async def query(self, message: str, session_id: str = None) -> Dict[str, Any]:
         """Process user query with RAG approach"""
         if not self.is_ready:
@@ -261,4 +261,4 @@ Answer:"""
         """Cleanup resources"""
         logger.info("Cleaning up RAG Service...")
         self.is_ready = False
-        # Add any cleanup logic here
+        #

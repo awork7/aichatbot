@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
-from fastapi.security import HTTPBearer
 from typing import Dict, Any, Optional
 import time
 import uuid
@@ -11,11 +10,10 @@ from app.services.rag_service import RAGService
 from app.utils.cache import CacheManager
 from app.utils.monitoring import REQUEST_COUNT, ACTIVE_SESSIONS
 from app.core.logging import get_logger
-from app.main import get_rag_service, get_cache_manager
+from app.core.dependencies import get_rag_service, get_cache_manager  # Fixed import
 
 router = APIRouter()
 logger = get_logger(__name__)
-security = HTTPBearer(auto_error=False)
 
 @router.post("/message", response_model=ChatResponse)
 async def send_message(
@@ -35,11 +33,7 @@ async def send_message(
         if len(request.message) > 1000:
             raise HTTPException(status_code=400, detail="Message too long")
         
-        # Rate limiting check (implement based on session_id)
-        # await check_rate_limit(session_id, cache_manager)
-        
         # Process the query
-        start_time = time.time()
         result = await rag_service.query(request.message, session_id)
         
         # Create response

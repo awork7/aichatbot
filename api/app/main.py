@@ -1,31 +1,24 @@
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 import uvicorn
 import logging
-from typing import Dict, Any
 
 from app.core.config import get_settings
 from app.core.logging import setup_logging
+from app.core.dependencies import set_rag_service, set_cache_manager
 from app.routers import chat, health, services, admin
 from app.services.rag_service import RAGService
-from app.utils.monitoring import REQUEST_COUNT, setup_metrics
+from app.utils.monitoring import setup_metrics
 from app.utils.cache import CacheManager
 
 # Setup logging
 setup_logging()
 logger = logging.getLogger(__name__)
 
-# Global instances
-rag_service: RAGService = None
-cache_manager: CacheManager = None
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application lifecycle"""
-    global rag_service, cache_manager
-    
     settings = get_settings()
     logger.info("Starting SIB AI Chatbot API...")
     
@@ -41,8 +34,9 @@ async def lifespan(app: FastAPI):
         # Setup monitoring
         setup_metrics()
         
-        app.state.rag_service = rag_service
-        app.state.cache_manager = cache_manager
+        # Set global dependencies
+        set_rag_service(rag_service)
+        set_cache_manager(cache_manager)
         
         logger.info("✅ All services initialized successfully")
         
@@ -53,10 +47,6 @@ async def lifespan(app: FastAPI):
         raise
     finally:
         # Cleanup
-        if rag_service:
-            await rag_service.cleanup()
-        if cache_manager:
-            await cache_manager.close()
         logger.info("Application shutdown complete")
 
 # Create FastAPI app
@@ -94,25 +84,9 @@ async def root():
         "docs": "/docs" if settings.ENVIRONMENT == "development" else "disabled"
     }
 
-# Serve static files (React build) in production
-if settings.ENVIRONMENT == "production":
-    app.mount("/", StaticFiles(directory="frontend/build", html=True), name="static")
-
-def get_rag_service() -> RAGService:
-    """Dependency to get RAG service"""
-    if not rag_service or not rag_service.is_ready:
-        raise HTTPException(status_code=503, detail="RAG service not available")
-    return rag_service
-
-def get_cache_manager() -> CacheManager:
-    """Dependency to get cache manager"""
-    if not cache_manager:
-        raise HTTPException(status_code=503, detail="Cache service not available")
-    return cache_manager
-
 if __name__ == "__main__":
     uvicorn.run(
-        "main:app",
+        "app.main:app",
         host="0.0.0.0",
         port=8000,
         reload=settings.ENVIRONMENT == "development",

@@ -3,10 +3,9 @@ from app.models.response import HealthResponse
 from app.services.rag_service import RAGService
 from app.utils.cache import CacheManager
 from app.core.config import get_settings
-from app.main import get_rag_service, get_cache_manager
+from app.core.dependencies import get_rag_service, get_cache_manager  # Fixed import
 import psutil
 import time
-from datetime import datetime
 
 router = APIRouter()
 
