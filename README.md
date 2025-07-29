@@ -1,8 +1,8 @@
-Complete GitHub Documentation for South Indian Bank Chatbot (SAI)
+Complete GitHub Documentation for Bank Chatbot (SAI)
 Here's a comprehensive README.md file for your GitHub repository:
 
 text
-# 🏦 SAI - South Indian Bank Chatbot
+# 🏦 SAI -  Bank Chatbot
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.29.0-red.svg)](https://streamlit.io)
