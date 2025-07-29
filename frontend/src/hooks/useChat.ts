@@ -1,7 +1,15 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import apiService from '../services/api';
-import { Message, ChatRequest } from '../types';
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  sources?: string[];
+  timestamp: Date;
+  response_time?: number;
+}
 
 export const useChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -18,13 +26,16 @@ export const useChat = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Check system health
+  // Check system health and test API connection
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        await apiService.getHealthStatus();
+        console.log('🔍 Testing API connection...');
+        const health = await apiService.getHealthStatus();
+        console.log('✅ API connection successful:', health);
         setSystemStatus('online');
-      } catch {
+      } catch (error) {
+        console.error('❌ API connection failed:', error);
         setSystemStatus('offline');
       }
     };
@@ -58,12 +69,9 @@ export const useChat = () => {
     setIsLoading(true);
 
     try {
-      const request: ChatRequest = {
-        message: content.trim(),
-        session_id: sessionId,
-      };
-
-      const response = await apiService.sendMessage(request);
+      console.log('📤 Sending message to API:', content);
+      const response = await apiService.sendMessage(content, sessionId);
+      console.log('📥 Received response from API:', response);
 
       const assistantMessage: Message = {
         id: uuidv4(),
@@ -76,10 +84,12 @@ export const useChat = () => {
 
       setMessages(prev => [...prev, assistantMessage]);
     } catch (err: any) {
+      console.error('❌ Error sending message:', err);
+      
       const errorMessage: Message = {
         id: uuidv4(),
         role: 'assistant',
-        content: '🚨 Sorry, I encountered an error. Please try again or check if the API server is running.',
+        content: `🚨 Sorry, I encountered an error: ${err.message}\n\nPlease make sure the API server is running on http://localhost:8000`,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, errorMessage]);
