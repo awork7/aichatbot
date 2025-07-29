@@ -9,7 +9,7 @@ text
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Offline](https://img.shields.io/badge/Mode-Offline-yellow.svg)]()
 
-**SAI (South Indian Bank Online Assistant)** is an AI-powered chatbot built exclusively for South Indian Bank queries using RAG (Retrieval-Augmented Generation) approach. It operates completely offline, ensuring maximum security and privacy.
+**SAI (Bank Online Assistant)** is an AI-powered chatbot built exclusively for South Indian Bank queries using RAG (Retrieval-Augmented Generation) approach. It operates completely offline, ensuring maximum security and privacy.
 
 ## 🌟 Features
 
