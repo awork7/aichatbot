@@ -4,7 +4,7 @@ import time
 import os
 
 st.set_page_config(
-    page_title="SOnA - South Indian Bank Assistant",
+    page_title="Spark - South Indian Bank AI Assistant",
     page_icon="🏦",
     layout="wide"
 )
@@ -19,7 +19,7 @@ def load_rag_chain():
         return None
 
 def main():
-    st.title("🏦 SOnA - South Indian Bank Assistant")
+    st.title("🏦 Spark - South Indian Bank AI Assistant")
     
     # Check vector database
     if not os.path.exists("sib_vectordb"):
